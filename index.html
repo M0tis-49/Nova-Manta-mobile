@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nova Manta</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#080a0f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nova Manta">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Eviter les barres systeme sur mobile */
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    /* Bouton d'installation PWA */
+    #pwa-install {
+      display: none;
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      padding: 10px 22px;
+      border: 1px solid rgba(72, 227, 215, 0.6);
+      border-radius: 999px;
+      background: rgba(8, 10, 15, 0.92);
+      color: #48e3d7;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 24px rgba(72, 227, 215, 0.18);
+      animation: pulse-btn 2s ease-in-out infinite;
+    }
+    #pwa-install.visible { display: block; }
+
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 0 24px rgba(72, 227, 215, 0.18); }
+      50%       { box-shadow: 0 0 36px rgba(72, 227, 215, 0.38); }
+    }
+  </style>
+</head>
+<body>
+<main class="app-shell" aria-label="Nova Manta">
+  <header class="hud" aria-label="Tableau de bord">
+    <div class="brand" aria-label="Nova Manta">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>NOVA MANTA</span>
+    </div>
+    <div class="stat-grid">
+      <div class="stat">
+        <span>Secteur</span>
+        <strong id="levelValue">1</strong>
+      </div>
+      <div class="stat">
+        <span>Score</span>
+        <strong id="scoreValue">0</strong>
+      </div>
+      <div class="stat">
+        <span>Noyaux</span>
+        <strong><span id="coresValue">0</span>/<span id="targetValue">0</span></strong>
+      </div>
+      <div class="stat">
+        <span>Temps</span>
+        <strong id="timeValue">00</strong>
+      </div>
+    </div>
+    <div class="systems">
+      <div class="hearts" id="healthValue" aria-label="Coque"></div>
+      <div class="meter" aria-label="Dash">
+        <span id="energyBar"></span>
+      </div>
+      <div class="meter pulse" aria-label="Impulsion">
+        <span id="pulseBar"></span>
+      </div>
+      <button class="icon-button" id="skinToggle" type="button" aria-label="Choisir un skin" title="Skins">S</button>
+      <button class="icon-button" id="soundButton" type="button" aria-label="Son active">
+        <span id="soundIcon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="stage" aria-label="Zone de jeu">
+    <canvas id="gameCanvas"></canvas>
+    <div class="banner" id="banner">
+      <div class="banner-panel">
+        <p class="kicker" id="bannerKicker">Secteur 01</p>
+        <h1 id="bannerTitle">Nova Manta</h1>
+        <p id="bannerText">95 secteurs, difficulte progressive, nouvelles menaces. Charge les noyaux et ouvre le portail.</p>
+        <div class="level-panel" id="levelPanel">
+          <p class="level-label">Secteur <strong id="selectedLevelLabel">01</strong> / 95</p>
+          <div class="level-grid" id="levelGrid"></div>
+        </div>
+        <div class="skin-panel" id="skinPanel">
+          <p class="skin-label">Apparence du vaisseau</p>
+          <div class="skin-grid" id="skinGrid"></div>
+        </div>
+        <button id="primaryButton" type="button">Lancer</button>
+      </div>
+    </div>
+
+    <div class="mobile-controls" aria-hidden="true">
+      <div class="stick" id="stick">
+        <span id="stickKnob"></span>
+      </div>
+      <div class="action-pad">
+        <button class="action-button" id="pulseButton" type="button" aria-label="Impulsion">*</button>
+        <button class="action-button wide" id="dashButton" type="button" aria-label="Dash">&gt;&gt;</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Bouton "Installer l'app" -->
+<button id="pwa-install">⬇ Installer Nova Manta</button>
+
+<script src="game.js"></script>
+<script>
+  // Enregistrement du Service Worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").then((reg) => {
+        console.log("SW enregistré :", reg.scope);
+      }).catch((err) => {
+        console.warn("SW echec :", err);
+      });
+    });
+  }
+
+  // Bouton d'installation PWA (Android Chrome)
+  let deferredPrompt = null;
+  const installBtn = document.getElementById("pwa-install");
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add("visible");
+  });
+
+  installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log("Installation :", outcome);
+    deferredPrompt = null;
+    installBtn.classList.remove("visible");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    installBtn.classList.remove("visible");
+    deferredPrompt = null;
+  });
+</script>
+</body>
+</html>

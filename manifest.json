@@ -1,0 +1,27 @@
+{
+  "name": "Nova Manta",
+  "short_name": "Nova Manta",
+  "description": "95 secteurs, difficulté progressive, nouvelles menaces. Charge les noyaux et ouvre le portail.",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080a0f",
+  "theme_color": "#080a0f",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games"],
+  "screenshots": []
+}
