@@ -626,7 +626,8 @@ canvas {
 }
 
 /* Mobile paysage : toujours afficher les controles, HUD sur une ligne */
-@media (max-height: 500px) and (orientation: landscape) {
+/* Couvre tous les mobiles en paysage (max-width détecte l'écran mobile) */
+@media (max-width: 960px) and (orientation: landscape) {
   .app-shell {
     grid-template-rows: auto 1fr;
     height: 100dvh;
@@ -653,6 +654,7 @@ canvas {
     min-height: 0;
   }
 
+  /* Afficher les controles tactiles en paysage mobile */
   .mobile-controls {
     display: flex;
     inset: auto 8px 6px 8px;
@@ -671,5 +673,40 @@ canvas {
 
   .action-button.wide {
     width: 64px;
+  }
+}
+
+/* Ecrans tres petits en paysage (ex: iPhone SE) : HUD encore plus compact */
+@media (max-height: 400px) and (orientation: landscape) {
+  .hud {
+    padding: 2px 6px;
+    gap: 6px;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .stat {
+    padding: 2px 4px;
+  }
+
+  .stat strong {
+    font-size: 0.75rem;
+  }
+
+  .stick {
+    width: 76px;
+    height: 76px;
+  }
+
+  .action-button {
+    width: 42px;
+    height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .action-button.wide {
+    width: 56px;
   }
 }
