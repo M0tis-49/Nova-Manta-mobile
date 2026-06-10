@@ -1,11 +1,12 @@
-const CACHE_NAME = "nova-manta-v1";
+const CACHE_NAME = "nova-manta-v2";
 const ASSETS = [
   "./index.html",
   "./game.js",
   "./styles.css",
   "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./Loop-song.wav"
 ];
 
 // Installation : mise en cache de tous les fichiers

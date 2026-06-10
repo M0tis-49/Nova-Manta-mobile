@@ -137,7 +137,9 @@ function stopMusic(fade = false) {
 }
 
 async function ensureMusic() {
-  if (muted || !audioContext) return;
+  if (muted) return;
+  makeAudio();                          // crée le contexte si absent
+  if (!audioContext) return;
   if (!musicLoaded) await loadMusic();
   if (!musicSource && musicBuffer) startMusic();
 }
