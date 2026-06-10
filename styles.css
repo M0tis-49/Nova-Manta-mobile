@@ -520,12 +520,12 @@ canvas {
 
 @media (max-width: 960px) {
   body {
-    overflow: auto;
+    overflow: hidden;
   }
 
   .app-shell {
     height: 100dvh;
-    min-height: 620px;
+    min-height: 0;
     padding: 8px;
   }
 
@@ -543,15 +543,11 @@ canvas {
   }
 
   .stage {
-    min-height: 420px;
+    min-height: 0;
   }
 }
 
 @media (max-width: 680px) {
-  .app-shell {
-    min-height: 700px;
-  }
-
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -566,5 +562,114 @@ canvas {
 
   .banner-panel {
     transform: translateY(-28px);
+  }
+}
+
+/* Mobile portrait : HUD compact, canvas max */
+@media (max-width: 680px) and (orientation: portrait) {
+  .app-shell {
+    grid-template-rows: auto 1fr;
+    height: 100dvh;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .hud {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+
+  .stat {
+    padding: 4px 6px;
+  }
+
+  .stat strong {
+    font-size: 0.9rem;
+  }
+
+  .systems {
+    gap: 4px;
+  }
+
+  .stage {
+    min-height: 0;
+    flex: 1;
+  }
+
+  .mobile-controls {
+    display: flex;
+    inset: auto 8px 8px 8px;
+  }
+
+  .stick {
+    width: 100px;
+    height: 100px;
+  }
+
+  .action-button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .action-button.wide {
+    width: 68px;
+  }
+}
+
+/* Mobile paysage : toujours afficher les controles, HUD sur une ligne */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app-shell {
+    grid-template-rows: auto 1fr;
+    height: 100dvh;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .hud {
+    grid-template-columns: minmax(120px, auto) 1fr minmax(200px, auto);
+    padding: 4px 8px;
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .brand span:last-child {
+    font-size: 0.78rem;
+  }
+
+  .stat strong {
+    font-size: 0.85rem;
+  }
+
+  .stage {
+    min-height: 0;
+  }
+
+  .mobile-controls {
+    display: flex;
+    inset: auto 8px 6px 8px;
+  }
+
+  .stick {
+    width: 90px;
+    height: 90px;
+  }
+
+  .action-button {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  .action-button.wide {
+    width: 64px;
   }
 }
