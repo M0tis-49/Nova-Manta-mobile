@@ -89,6 +89,59 @@ let audioContext = null;
 let muted = false;
 let rafId = 0;
 
+// --- Musique de fond ---
+let musicBuffer = null;
+let musicSource = null;
+let musicGain = null;
+let musicLoaded = false;
+
+async function loadMusic() {
+  if (musicLoaded) return;
+  musicLoaded = true;
+  try {
+    const response = await fetch("Loop-song.wav");
+    const arrayBuffer = await response.arrayBuffer();
+    musicBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  } catch (err) {
+    console.warn("Impossible de charger Loop-song.wav :", err);
+  }
+}
+
+function startMusic() {
+  if (muted || !audioContext || !musicBuffer) return;
+  stopMusic();
+  musicGain = audioContext.createGain();
+  musicGain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  musicGain.gain.linearRampToValueAtTime(0.32, audioContext.currentTime + 1.5);
+  musicGain.connect(audioContext.destination);
+  musicSource = audioContext.createBufferSource();
+  musicSource.buffer = musicBuffer;
+  musicSource.loop = true;
+  musicSource.connect(musicGain);
+  musicSource.start(0);
+}
+
+function stopMusic(fade = false) {
+  if (!musicSource) return;
+  if (fade && musicGain) {
+    const t = audioContext.currentTime;
+    musicGain.gain.setValueAtTime(musicGain.gain.value, t);
+    musicGain.gain.linearRampToValueAtTime(0.0001, t + 0.8);
+    const src = musicSource;
+    setTimeout(() => { try { src.stop(); } catch (_) {} }, 900);
+  } else {
+    try { musicSource.stop(); } catch (_) {}
+  }
+  musicSource = null;
+  musicGain = null;
+}
+
+async function ensureMusic() {
+  if (muted || !audioContext) return;
+  if (!musicLoaded) await loadMusic();
+  if (!musicSource && musicBuffer) startMusic();
+}
+
 const input = {
   up: false,
   down: false,
@@ -342,6 +395,7 @@ function resetRun(level = selectedLevel) {
   hideBanner();
   renderLevelSelector();
   chord([220, 330, 494], 0.1, "triangle", 0.035);
+  ensureMusic();
 }
 
 function startLevel(level) {
@@ -1978,6 +2032,9 @@ ui.soundButton.addEventListener("click", () => {
   if (!muted) {
     makeAudio();
     tone(500, 0.08, "sine", 0.035, 120);
+    ensureMusic();
+  } else {
+    stopMusic(true);
   }
 });
 
